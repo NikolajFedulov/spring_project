@@ -5,6 +5,8 @@ import lesson24.repository.AnimalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AnimalService {
 
@@ -15,19 +17,58 @@ public class AnimalService {
         this.animalRepository = animalRepository;
     }
 
-    public Animal getAnimal(int id) {
-        return animalRepository.getAnimal(id);
+    public Optional<Animal> getAnimal(Integer id) {
+        return animalRepository.findById(id);
     }
 
     public Animal addAnimal(Animal animal){
-        return animalRepository.addAnimal(animal);
+        Animal duplicate = animalRepository.animalIsExists(
+                animal.getSpecies(),
+                animal.getAnimalGender(),
+                animal.getAnimalAge(),
+                animal.getAnimalName()
+        );
+        if (duplicate == null){
+            animalRepository.addAnimal(
+                    animal.getSpecies(),
+                    animal.getAnimalGender(),
+                    animal.getAnimalAge(),
+                    animal.getAnimalName()
+            );
+            return animalRepository.animalIsExists(
+                    animal.getSpecies(),
+                    animal.getAnimalGender(),
+                    animal.getAnimalAge(),
+                    animal.getAnimalName()
+            );
+        }
+        return null;
     }
 
     public Animal updateAnimal(Animal animal) {
-        return animalRepository.updateAnimal(animal);
+        Animal duplicate = animalRepository.animalIsExists(
+                animal.getSpecies(),
+                animal.getAnimalGender(),
+                animal.getAnimalAge(),
+                animal.getAnimalName()
+        );
+        if (duplicate == null) {
+            animalRepository.updateAnimal(
+                    animal.getSpecies(),
+                    animal.getAnimalGender(),
+                    animal.getAnimalAge(),
+                    animal.getAnimalName(),
+                    animal.getAnimalID());
+            return animalRepository.findById(animal.getAnimalID()).orElse(null);
+        }
+        return null;
     }
 
-    public Animal removeAnimal(int id) {
-        return animalRepository.removeAnimal(id);
+    public Animal removeAnimal(Integer id) {
+        Animal animal = animalRepository.findById(id).orElse(null);
+        if (animal != null) {
+            animalRepository.deleteById(id);
+        }
+        return animal;
     }
 }
