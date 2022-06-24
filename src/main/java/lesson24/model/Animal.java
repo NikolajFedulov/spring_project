@@ -2,9 +2,11 @@ package lesson24.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Objects;
 
+@Table
 public class Animal {
 
     @Id
