@@ -3,6 +3,7 @@ package lesson24.controller;
 import lesson24.model.Animal;
 import lesson24.service.AnimalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,6 +20,7 @@ public class AnimalController {
     }
 
     @GetMapping("/{id}")
+    @Cacheable(value = "animalID")
     public Animal getAnimal(@PathVariable int id) {
         Animal animal = animalService.getAnimal(id).orElse(null);
         if (animal == null) {
