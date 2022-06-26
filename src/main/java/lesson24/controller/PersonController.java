@@ -21,7 +21,7 @@ public class PersonController {
 
     @GetMapping("/{id}")
     public Person getPerson(@PathVariable int id) {
-        Person person = personService.getPerson(id);
+        Person person = personService.getPerson(id).orElse(null);
         if (person == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -32,14 +32,18 @@ public class PersonController {
     public Person updatePerson(@RequestBody Person person) {
         Person person1 = personService.updatePerson(person);
         if (person1 == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return person1;
     }
 
     @PutMapping
     public Person addPerson(@RequestBody Person person) {
-        return personService.addPerson(person);
+        person = personService.addPerson(person);
+        if (person == null) {
+            throw new ResponseStatusException (HttpStatus.BAD_REQUEST);
+        }
+        return person;
     }
 
     @DeleteMapping("/{id}")

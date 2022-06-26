@@ -3,69 +3,48 @@ package lesson24.repository;
 import lesson24.model.Animal;
 import lesson24.model.Gender;
 import lesson24.model.Species;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jdbc.repository.query.Modifying;
+import org.springframework.data.jdbc.repository.query.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Repository
-public class AnimalRepository {
+public interface AnimalRepository extends CrudRepository<Animal, Integer> {
 
-    private List<Animal> animalList = new ArrayList<>();
+    @Modifying
+    @Query("INSERT INTO public.animal(species, animal_gender, animal_age, animal_name) " +
+            "VALUES (:1::species, :2::gender, :3, :4)")
+    public void addAnimal(
+            @Param("1") Species species,
+            @Param("2") Gender gender,
+            @Param("3") int age,
+            @Param("4") String name
+    );
 
-    public AnimalRepository(){
-        int index;
-        index = animalList.size();
-        animalList.add(new Animal(index, Species.CAT, Gender.FEMALE, 3, "Sakura"));
-        index = animalList.size();
-        animalList.add(new Animal(index, Species.CAT, Gender.MALE, 1, "Greedo"));
-        index = animalList.size();
-        animalList.add(new Animal(index, Species.CAT, Gender.MALE, 1, "Jay"));
-        index = animalList.size();
-        animalList.add(new Animal(index, Species.CAT, Gender.FEMALE, 1, "MIla"));
-        index = animalList.size();
-        animalList.add(new Animal(index, Species.DOG, Gender.FEMALE, 2,"Willow"));
-        index = animalList.size();
-        animalList.add(new Animal(index, Species.DOG, Gender.FEMALE, 3, "Snow White"));
-        index = animalList.size();
-        animalList.add(new Animal(index, Species.DOG, Gender.MALE, 6, "Ryder"));
-        index = animalList.size();
-        animalList.add(new Animal(index, Species.DOG, Gender.MALE, 3, "Remi"));
-    }
+    @Query("SELECT * FROM animal WHERE species = :1::species AND animal_gender = :2::gender " +
+            "AND animal_age = :3 AND animal_name ILIKE :4")
+    public Animal animalIsExists(
+            @Param("1") Species species,
+            @Param("2") Gender gender,
+            @Param("3") int age,
+            @Param("4") String name
+    );
 
-    public Animal getAnimal(int id) {
-        try {
-            return animalList.get(id);
-        }
-        catch (IndexOutOfBoundsException e) {
-            return null;
-        }
-    }
+//    @Query("SELECT * FROM animal WHERE animal_id = (SELECT MAX(animal_id) FROM animal)")
+//    public Animal getAnimalByMaxID();
 
-    public Animal addAnimal(@NotNull Animal animal) {
-        int index = getAnimal(animalList.size()-1).getAnimalID()+1;
-        animal.setAnimalID(index);
-        animalList.add(animal);
-        return getAnimal(animalList.size()-1);
-    }
+//    @Query("SELECT MAX(animal_id) FROM animal")
+//    public Integer maxIDAnimal();
 
-    public Animal updateAnimal(@NotNull Animal animal) {
-        int index = animal.getAnimalID();
-        try {
-            return animalList.set(index, animal);
-        }
-        catch (IndexOutOfBoundsException e) {
-            return null;
-        }
-    }
-
-    public Animal removeAnimal(int id) {
-        try {
-            return animalList.remove(id);
-        }
-        catch (IndexOutOfBoundsException e) {
-            return null;
-        }
-    }
+    @Modifying
+    @Query("UPDATE animal SET species = :1::species, animal_gender = :2::gender, animal_age = :3, " +
+            "animal_name = :4 WHERE animal_id = :5")
+    public void updateAnimal(
+            @Param("1") Species species,
+            @Param("2") Gender gender,
+            @Param("3") int age,
+            @Param("4") String name,
+            @Param("5") Integer animalID
+    );
 }

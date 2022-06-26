@@ -1,11 +1,26 @@
 package lesson24.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+
+import java.util.Objects;
+
 public class Person {
 
+    @Id
+    @Column("person_id")
     private int personID;
+
+    @Column("person_name")
     private String personName;
+
+    @Column("person_surname")
     private String personSurname;
+
+    @Column("person_age")
     private int personAge;
+
+    @Column("person_gender")
     private Gender gender;
 
     public Person() {
@@ -59,5 +74,22 @@ public class Person {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return this.personID == person.personID &&
+                this.personAge == person.personAge &&
+                this.personName.equalsIgnoreCase(person.personName) &&
+                this.personSurname.equalsIgnoreCase(person.personSurname) &&
+                gender == person.gender;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(personID, personName, personSurname, personAge, gender);
     }
 }
