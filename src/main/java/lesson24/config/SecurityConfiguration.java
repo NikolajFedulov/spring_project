@@ -9,7 +9,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 
 @Configuration
-public class SecurityConfiguration /*extends WebSecurityConfigurerAdapter*/ {
+public class SecurityConfiguration {
 
     private final String ENCODED_PASSWORD = "$2a$10$a1xkj1XSVE81fLJT8oQdIOiiz31PmRPEkFeLSHc6bFvSabGCYmXVG";
 
